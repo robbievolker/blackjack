@@ -1,39 +1,40 @@
 import random
 
+#Class for each card in the deck. Contains a suit ("Clubs", "Diamonds", "Spades", "Hearts") and a value (1, 2, 3, 4, Jack, Queen etc.) attriubte.
 class Card:
     def __init__(self, value, suit):
         self.value = value
         self.suit = suit
 
+
 def main():
     play = wantToPlay()
     while(play == True):
+
+        #Print introductory message.
         printIntro()
 
+        #Create deck (from list of card objects).
         deck = newDeck()
 
-        playerHand = []
-        playerCount = 0
-        dealerHand = []
-        dealerCount = 0
-        while(len(playerHand) < 2):
-            playerHand.append(deck.pop())
-        while(len(dealerHand) < 2):
-            dealerHand.append(deck.pop())
 
-        playerTurn(playerHand)
+        #Players turn, returns the total value of player's hand as an integer all turn logic takes place during the player function.
+        print(len(deck))
+        player = playerTurn(deck)
 
 
-
+        #Dealer's turn.
         print("")
         print("Now it's the dealer's turn!")
+        dealer = dealerTurn(deck)
 
-        dealerCount = dealerTurn(dealerHand)
-        print(dealerCount)
+        #Compare scores and determine a winner.
+
+        #Ask user if they want to play again.
         play = wantToPlay()
 
 
-
+#Establishes whether or not the player wants to play. Returns True or False.
 def wantToPlay():
     value = input("Do you want to play Blackjack? (Y/N)")
     if(value == "Y" or value == "y"):
@@ -44,6 +45,7 @@ def wantToPlay():
         print("Please restart the game and enter either y or n")
         return False
 
+#Intro message printed to console explaining th game.
 def printIntro():
         print("Welcome to Blackjack!")
         print("This is a popular casino game where the objective is to get as close to the number 21 as possible with the value of your cards. If you go over 21, you're bust!")
@@ -53,6 +55,7 @@ def printIntro():
         print("")
         print("")
 
+#Returns True or False depending on whether or not the player wants to draw another card.
 def hitOrStick():
     value = input("Do you want to hit or stick? (Y/N)")
     if(value == "Y" or value == "y"):
@@ -62,7 +65,9 @@ def hitOrStick():
     else:
         print("Please input Y or N.")
 
+#Creates a new deck using a nested loop. Creates a card of each value for each suit and returns a list of objects.
 def newDeck():
+
     suits = ["Hearts", "Diamonds", "Spades", "Clubs"]
     values = [2, 3, 4, 5, 6, 7, 8, 9, 10, "Jack", "Queen", "King", "Ace"]
     #deck = [Card(value, suit) for value in range(1, 14) for suit in suits]
@@ -74,10 +79,10 @@ def newDeck():
     random.shuffle(deck)
     return deck
 
-def playerTurn(hand):
-
-    print("Your hand is:")
+#Evaluates the score of a hand.
+def evalHand(hand):
     playerCount = 0
+    print("Hand contains:")
     for card in hand:
         if(card.value == "King" or card.value == "Jack" or card.value == "Queen"):
             playerCount += 10
@@ -92,28 +97,34 @@ def playerTurn(hand):
     print("")
     print("The total value is: " + str(playerCount))
     print("")
+    return playerCount
 
-    if(playerCount > 21):
-        print("Bust! You lose!")
-        quit()
+#Function for the player's turn. Appends two cards and evaluates hand to start. Player then can choose to hit or stick. Returns an integer which is the player's score.
+def playerTurn(deck):
+    hand = []
+    while(len(hand) < 2):
+        hand.append(deck.pop())
+    playerCount = evalHand(hand)
+    hit = hitOrStick()
+    while(hit == True):
+        hand.append(deck.pop())
+        playerCount = evalHand(hand)
+        hit = hitOrStick()
+        if(playerCount > 21):
+            print("Bust! You lose!")
+            break
+    return playerCount
 
-def dealerTurn(hand):
+#Dealer turn. Dealer logic is set to always draw as long as the value is less than 17 (16 or lower). Returns an integer which is the dealer's score.
+def dealerTurn(deck):
+    hand = []
     dealerCount = 0
+    while(len(hand) < 2):
+        hand.append(deck.pop())
+    dealerCount = evalHand(hand)
     while(dealerCount < 17):
-        for card in hand:
-            if(card.value == "King" or card.value == "Jack" or card.value == "Queen"):
-                dealerCount += 10
-            elif(card.value == "Ace"):
-                if(dealerCount + 11 > 21):
-                    dealerCount += 1
-                else:
-                    dealerCount += 11
-            else:
-                dealerCount += card.value
-            print(str(card.value)  + " of " + str(card.suit))
-        print("")
-        print("The total value is: " + str(dealerCount))
-        print("")
+        hand.append(deck.pop())
+
     return dealerCount
 
 if __name__ == "__main__": main()
