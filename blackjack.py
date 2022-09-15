@@ -18,17 +18,19 @@ def main():
         deck = newDeck()
 
 
-        #Players turn, returns the total value of player's hand as an integer all turn logic takes place during the player function.
+        #Players turn, returns the total value of player's hand as an integer. All turn logic takes place during the player function.
         print(len(deck))
         player = playerTurn(deck)
+        #Immediately call final score function if player score is over 21.
 
-
-        #Dealer's turn.
+        #Dealer's turn, returns the total value of the dealer's hand as an integer. All turn logic takes place during the dealer function.
         print("")
         print("Now it's the dealer's turn!")
         dealer = dealerTurn(deck)
 
         #Compare scores and determine a winner.
+        finalResult(player, dealer)
+
 
         #Ask user if they want to play again.
         play = wantToPlay()
@@ -97,6 +99,7 @@ def evalHand(hand):
     print("")
     print("The total value is: " + str(playerCount))
     print("")
+
     return playerCount
 
 #Function for the player's turn. Appends two cards and evaluates hand to start. Player then can choose to hit or stick. Returns an integer which is the player's score.
@@ -109,10 +112,10 @@ def playerTurn(deck):
     while(hit == True):
         hand.append(deck.pop())
         playerCount = evalHand(hand)
-        hit = hitOrStick()
         if(playerCount > 21):
             print("Bust! You lose!")
             break
+        hit = hitOrStick()
     return playerCount
 
 #Dealer turn. Dealer logic is set to always draw as long as the value is less than 17 (16 or lower). Returns an integer which is the dealer's score.
@@ -124,7 +127,25 @@ def dealerTurn(deck):
     dealerCount = evalHand(hand)
     while(dealerCount < 17):
         hand.append(deck.pop())
-
+        dealerCount = evalHand(hand)
+        if(dealerCount > 21):
+            print("The house went bust! You win!")
+            break
     return dealerCount
+
+#Prints final result.
+def finalResult(playerScore, dealerScore):
+    if(playerScore > dealerScore):
+        print("You won!")
+        print("Your score was: " + str(playerScore))
+        print("The house's score was: " + str(dealerScore))
+    elif(dealerScore > playerScore):
+        print("Bad luck, the house won!")
+        print("Your score was: " + str(playerScore))
+        print("The house's score was: " + str(dealerScore))
+    else:
+        print("It's a draw!")
+        print("Your score was: " + str(playerScore))
+        print("The house's score was: " + str(dealerScore))
 
 if __name__ == "__main__": main()
