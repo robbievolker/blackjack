@@ -114,7 +114,7 @@ def playerTurn(deck):
         playerCount = evalHand(hand)
         if(playerCount > 21):
             print("Bust! You lose!")
-            break
+            quit()
         hit = hitOrStick()
     return playerCount
 
@@ -130,7 +130,7 @@ def dealerTurn(deck):
         dealerCount = evalHand(hand)
         if(dealerCount > 21):
             print("The house went bust! You win!")
-            break
+            quit()
     return dealerCount
 
 #Prints final result.
